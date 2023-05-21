@@ -75,7 +75,7 @@ end)
 RegisterNetEvent('DE_hospital:hospitalbed')
 AddEventHandler('DE_hospital:hospitalbed', function(id, coords)
 	local playerPed = PlayerPedId()
-	local maxHealth = GetEntityMaxHealth(playerPed) - 100
+	local maxHealth = GetEntityMaxHealth(playerPed)
 	
 	DoScreenFadeOut(800)
 
