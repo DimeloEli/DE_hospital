@@ -1,9 +1,9 @@
 Config = {}
 
-Config.Notify = 'dlrms' -- 'dlrms' / 'mythic' / 'other'
+Config.Notify = 'other' -- 'dlrms' / 'mythic' / 'other'
 
 Config.CheckInTimer = 5 -- Check in timer in seconds
-Config.CheckInPrice = 300 -- Check in price
+Config.CheckInPrice = 2500 -- Check in price
 Config.HealingTimer = 10 -- Amount of time it takes for the player to be healed in the bed in seconds
 Config.PedDist = 5.0 -- Distance for ped to spawn
 Config.RespawnCoords = vector4(311.98, -588.98, 43.28, 69.8) -- Where you spawn after being healed
