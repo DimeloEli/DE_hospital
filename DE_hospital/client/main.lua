@@ -1,23 +1,4 @@
-local spawnedPeds, clipboardObj, pencilObj = {}, nil, nil
-
-for k, v in pairs(Config.CheckIn) do
-    exports['qtarget']:AddBoxZone(v.name, vector3(v.coords.xyz), 3.6, 2.8, {
-        name= v.name,
-        heading= 90.22,
-        debugPoly= false,
-        minZ= v.coords.z,
-        maxZ= v.coords.z + 2.8,
-        }, {
-        options = {
-            {
-                event = 'DE_hospital:checkin',
-                icon = "fas fa-kit-medical",
-                label = "Check-in",
-            },
-        },
-        distance = 3.5
-    })
-end
+local spawnedPeds = {}
 
 CreateThread(function()
 	while true do
@@ -51,22 +32,7 @@ AddEventHandler('DE_hospital:checkin', function()
 
 	ESX.TriggerServerCallback('DE_hospital:checkMoney', function(hasMoney)
 		if hasMoney then
-			clipboardObj = CreateObject(GetHashKey('p_amb_clipboard_01'), 0, 0, 0, true, true, true)
-			pencilObj = CreateObject(GetHashKey('prop_pencil_01'), 0, 0, 0, true, true, true)
-
-			AttachEntityToEntity(clipboardObj, playerPed, GetPedBoneIndex(playerPed, 18905), 0.10, 0.02, 0.08, -80.0, 0.0, 0.0, true, true, false, true, 1, true)
-			AttachEntityToEntity(pencilObj, playerPed, GetPedBoneIndex(playerPed, 58866), 0.12, 0.0, 0.001, -150.0, 0.0, 0.0, true, true, false, true, 1, true)
-			ESX.Streaming.RequestAnimDict('missheistdockssetup1clipboard@base', function()
-        		TaskPlayAnim(playerPed, 'missheistdockssetup1clipboard@base', 'base', 8.0, -8, -1, 49, 0, false, false, false)
-   	 		end)
-			exports.rprogress:Start('Checking in...', Config.CheckInTimer * 1000)
-
-			ClearPedTasks(playerPed)
-			DeleteObject(clipboardObj)
-			DeleteObject(pencilObj)
-			clipboardObj = nil
-			pencilObj = nil
-
+			lib.progressCircle({ label = 'Checking in', duration = Config.CheckInTimer * 1000, position = 'bottom', useWhileDead = false, canCancel = true, anim = { dict = 'missheistdockssetup1clipboard@base', clip = 'base' }, prop = { model = 'p_amb_clipboard_01', bone = 18905, pos = { x = 0.10, y = 0.02, z = 0.08 }, rot = { x = -80.0, y = 0.0, z = 0.0 }, disable = { move = true, car = true, mouse = false, combat = true, sprint = true } } })
 			TriggerServerEvent('DE_hospital:RequestBed')
 		end
 	end)
@@ -89,7 +55,7 @@ AddEventHandler('DE_hospital:hospitalbed', function(id, coords)
 		TaskPlayAnim(playerPed, 'anim@gangops@morgue@table@', 'body_search', 8.0, -8, -1, 1, 0, false, false, false)
 	end)
 	DoScreenFadeIn(800)
-	exports.rprogress:Start('Being healed...', Config.HealingTimer * 1000)
+	lib.progressCircle({ label = 'Being healed', duration = Config.HealingTimer * 1000, position = 'bottom', useWhileDead = false, canCancel = false, disable = { move = true, car = true, combat = true, mouse = false, sprint = true }})
 	TriggerServerEvent('DE_hospital:finishHeal', id)
 	ClearPedTasks(playerPed)
 	SetEntityCoords(playerPed, Config.RespawnCoords.x, Config.RespawnCoords.y, Config.RespawnCoords.z, false, false, false, true)
@@ -128,6 +94,13 @@ NearPed = function(model, coords, animDict, animName, scenario)
 		Wait(50)
 		SetEntityAlpha(spawnedPed, i, false)
 	end
+
+	exports.ox_target:addLocalEntity(spawnedPed, {
+		label = 'Check-in',
+		icon = 'fas fa-kit-medical',
+		distance = 3.0,
+		event = 'DE_hospital:checkin'
+	})
 
 	return spawnedPed
 end
